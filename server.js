@@ -4,14 +4,19 @@ const connectDB = require('./db');
 const cors = require('cors');
 const app = express();
 const UserRouter = require('./User');
+const cookieParser = require("cookie-parser");
+const BookRouter = require("./BookRoutes");
 const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(
 	cors({
 		origin: '*', // temporary for testing
 	}),
 );
+
+
 
 connectDB();
 
@@ -20,6 +25,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/user', UserRouter);
+app.use("/books", BookRouter);
 
 app.get('/api/books', async (req, res) => {
 	const { title, author } = req.query;

@@ -14,22 +14,22 @@ router.post('/register', (req, res) => {
 	if (name == '' || email == '' || password == '') {
 		res.json({
 			status: 'FAILED',
-			message: 'Empty input fields!'
+			message: 'Empty input fields!',
 		});
 	} else if (!/^[a-zA-Z ]*$/.test(name)) {
 		res.json({
 			status: 'FAILED',
-			message: 'Invalid name entered!'
+			message: 'Invalid name entered!',
 		});
 	} else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
 		res.json({
 			status: 'FAILED',
-			message: 'Invalid email entered!'
+			message: 'Invalid email entered!',
 		});
 	} else if (password.length < 8 || password.length > 12) {
 		res.json({
 			status: 'FAILED',
-			message: 'Password must be at least 8 to 12 characters!'
+			message: 'Password must be at least 8 to 12 characters!',
 		});
 	} else {
 		//Checking if user already exists
@@ -39,7 +39,7 @@ router.post('/register', (req, res) => {
 					//A User already exists
 					res.json({
 						status: 'FAILED',
-						message: 'User with the provided email already exists!'
+						message: 'User with the provided email already exists!',
 					});
 				} else {
 					User.create({ name, email, password })
@@ -47,13 +47,13 @@ router.post('/register', (req, res) => {
 							return res.json({
 								status: 'SUCCESS',
 								message: 'Signup successful',
-								data: user
+								data: user,
 							});
 						})
 						.catch((err) => {
 							return res.json({
 								status: 'FAILED',
-								message: 'An error occurred while creating user!'
+								message: 'An error occurred while creating user!',
 							});
 						});
 				}
@@ -61,7 +61,7 @@ router.post('/register', (req, res) => {
 			.catch((err) => {
 				res.json({
 					status: 'FAILED',
-					message: 'An error occured while checking email!'
+					message: 'An error occured while checking email!',
 				});
 			});
 	}
@@ -76,30 +76,45 @@ router.post('/login', async (req, res) => {
 		if (!user) {
 			return res.status(401).json({
 				success: false,
-				message: 'Invalid email or password'
+				message: 'Invalid email or password',
 			});
 		}
 
 		if (password !== user.password) {
 			return res.status(401).json({
 				success: false,
-				message: 'Invalid email or password'
+				message: 'Invalid email or password',
 			});
 		}
+
+		const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+			expiresIn: '1d',
+		});
+
+		res.cookie('token', token, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'none',
+		});
+
+		res.json({
+			status: 'SUCCESS',
+			message: 'Login successful',
+		});
 
 		return res.status(200).json({
 			success: true,
 			message: 'Login successful',
 			user: {
 				id: user._id,
-				email: user.email
-			}
+				email: user.email,
+			},
 		});
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({
 			success: false,
-			message: 'Server error'
+			message: 'Server error',
 		});
 	}
 });
