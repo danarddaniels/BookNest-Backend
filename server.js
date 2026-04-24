@@ -6,14 +6,10 @@ const app = express();
 const UserRouter = require('./User');
 const PORT = process.env.PORT || 4000;
 
-
-
-
 app.use(express.json());
 app.use(
 	cors({
 		origin: '*', // temporary for testing
-		credentials: true,
 	}),
 );
 
@@ -42,6 +38,5 @@ app.get('/api/books', async (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
 	console.log('Server is running');
+	connectDB();
 });
-
-connectDB();
