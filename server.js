@@ -13,6 +13,8 @@ app.use(
 	}),
 );
 
+connectDB();
+
 app.get('/', (req, res) => {
 	res.send('BookNest backend is live');
 });
@@ -38,5 +40,5 @@ app.get('/api/books', async (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
 	console.log('Server is running');
-	// connectDB();
+	
 });
