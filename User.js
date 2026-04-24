@@ -97,11 +97,6 @@ router.post('/login', async (req, res) => {
 			sameSite: 'none',
 		});
 
-		res.json({
-			status: 'SUCCESS',
-			message: 'Login successful',
-		});
-
 		return res.status(200).json({
 			success: true,
 			message: 'Login successful',
