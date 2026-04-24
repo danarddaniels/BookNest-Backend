@@ -1,9 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const connectDB = require('./db');
 const cors = require('cors');
 const app = express();
 const UserRouter = require('./User');
 const PORT = process.env.PORT || 4000;
+
+
+
 
 app.use(express.json());
 app.use(
@@ -12,7 +16,10 @@ app.use(
 		credentials: true,
 	}),
 );
-connectDB();
+
+app.get('/', (req, res) => {
+	res.send('BookNest backend is live');
+});
 
 app.use('/user', UserRouter);
 
@@ -37,4 +44,4 @@ app.listen(PORT, '0.0.0.0', () => {
 	console.log('Server is running');
 });
 
-//node server.js
+connectDB();
