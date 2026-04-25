@@ -8,27 +8,23 @@ const UserRouter = require('./User');
 const BookRouter = require('./BookRoutes');
 const PORT = process.env.PORT || 4000;
 
-app.use(
-	cors({
-		origin: process.env.FRONTEND_URL,
-		credentials: true,
-	}),
-);
+const corsOptions = {
+	origin: 'https://book-nest-sandy.vercel.app',
+	credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
-app.options(
-	'*',
-	cors({
-		origin: process.env.FRONTEND_URL,
-		credentials: true,
-	}),
-);
-
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 
-
-
 connectDB();
+
+app.get('/cors-test', (req, res) => {
+	res.json({ message: 'CORS is working' });
+});
 
 app.get('/', (req, res) => {
 	res.send('BookNest backend is live');
