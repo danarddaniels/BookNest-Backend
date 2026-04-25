@@ -1,10 +1,11 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 function verifyToken(req, res, next) {
+	console.log('cookies received:', req.cookies);
 	const token = req.cookies?.token;
 
 	if (!token) {
-		return res.status(401).json({ message: "Not logged in" });
+		return res.status(401).json({ message: 'Not logged in' });
 	}
 
 	try {
@@ -12,7 +13,7 @@ function verifyToken(req, res, next) {
 		req.user = decoded;
 		next();
 	} catch (err) {
-		res.status(403).json({ message: "Invalid token" });
+		res.status(403).json({ message: 'Invalid token' });
 	}
 }
 
