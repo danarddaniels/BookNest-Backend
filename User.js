@@ -1,76 +1,67 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 const User = require('./UserSchema');
 
-router.post('/register', (req, res) => {
-	let { name, email, password } = req.body;
+router.post('/register', async (req, res) => {
+	try {
+		let { name, email, password } = req.body;
 
-	name = name.trim();
-	email = email.trim();
-	password = password.trim();
+		name = name.trim();
+		email = email.trim().toLowerCase();
+		password = password.trim();
 
-	if (name == '' || email == '' || password == '') {
-		res.json({
-			status: 'FAILED',
-			message: 'Empty input fields!',
-		});
-	} else if (!/^[a-zA-Z ]*$/.test(name)) {
-		res.json({
-			status: 'FAILED',
-			message: 'Invalid name entered!',
-		});
-	} else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-		res.json({
-			status: 'FAILED',
-			message: 'Invalid email entered!',
-		});
-	} else if (password.length < 8 || password.length > 12) {
-		res.json({
-			status: 'FAILED',
-			message: 'Password must be at least 8 to 12 characters!',
-		});
-	} else {
-		//Checking if user already exists
-		User.find({ email })
-			.then((users) => {
-				if (users.length) {
-					//A User already exists
-					res.json({
-						status: 'FAILED',
-						message: 'User with the provided email already exists!',
-					});
-				} else {
-					User.create({ name, email, password })
-						.then((user) => {
-							return res.json({
-								status: 'SUCCESS',
-								message: 'Signup successful',
-								data: user,
-							});
-						})
-						.catch((err) => {
-							return res.json({
-								status: 'FAILED',
-								message: 'An error occurred while creating user!',
-							});
-						});
-				}
-			})
-			.catch((err) => {
-				res.json({
-					status: 'FAILED',
-					message: 'An error occured while checking email!',
-				});
+		if (name === '' || email === '' || password === '') {
+			return res.json({ status: 'FAILED', message: 'Empty input fields!' });
+		}
+
+		if (!/^[a-zA-Z ]*$/.test(name)) {
+			return res.json({ status: 'FAILED', message: 'Invalid name entered!' });
+		}
+
+		if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+			return res.json({ status: 'FAILED', message: 'Invalid email entered!' });
+		}
+
+		if (password.length < 8 || password.length > 12) {
+			return res.json({
+				status: 'FAILED',
+				message: 'Password must be 8 to 12 characters!',
 			});
+		}
+
+		const existingUser = await User.findOne({ email });
+
+		if (existingUser) {
+			return res.json({
+				status: 'FAILED',
+				message: 'User with the provided email already exists!',
+			});
+		}
+
+		const user = await User.create({ name, email, password });
+
+		return res.json({
+			status: 'SUCCESS',
+			message: 'Signup successful',
+			data: user,
+		});
+	} catch (err) {
+		return res.json({
+			status: 'FAILED',
+			message: 'Server error during signup',
+		});
 	}
 });
 
 router.post('/login', async (req, res) => {
-	const { email, password } = req.body;
-
 	try {
+		const { email, password } = req.body;
+
+		email = email.trim().toLowerCase();
+		password = password.trim();
+
 		const user = await User.findOne({ email });
 
 		if (!user) {
