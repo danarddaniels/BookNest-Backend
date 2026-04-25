@@ -6,10 +6,10 @@ const verifyToken = require('./verifyToken');
 // Get logged-in user's books
 router.get('/', verifyToken, async (req, res) => {
 	try {
-		const books = await Book.find({ userId: req.user.userId });
-		res.json({ success: true, books });
 		console.log('cookies:', req.cookies);
 		console.log('user:', req.user);
+		const books = await Book.find({ userId: req.user.userId });
+		res.json({ success: true, books });
 	} catch (err) {
 		res.status(500).json({ message: 'Failed to get books' });
 	}
