@@ -4,17 +4,15 @@ const connectDB = require('./db');
 const cors = require('cors');
 const app = express();
 const UserRouter = require('./User');
-const cookieParser = require('cookie-parser');
+
 const BookRouter = require('./BookRoutes');
 const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
-app.use(cookieParser());
-console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+
 app.use(
 	cors({
-		origin: process.env.FRONTEND_URL, 
-		credentials: true,
+		origin: process.env.FRONTEND_URL,
 	}),
 );
 
