@@ -8,8 +8,6 @@ const UserRouter = require('./User');
 const BookRouter = require('./BookRoutes');
 const PORT = process.env.PORT || 4000;
 
-app.use(express.json());
-
 app.use(
 	cors({
 		origin: process.env.FRONTEND_URL,
@@ -24,6 +22,11 @@ app.options(
 		credentials: true,
 	}),
 );
+
+
+app.use(express.json());
+
+
 
 connectDB();
 
