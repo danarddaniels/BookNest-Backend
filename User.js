@@ -57,21 +57,14 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
 	try {
-		const { email, password } = req.body;
+		let { email, password } = req.body;
 
 		email = email.trim().toLowerCase();
 		password = password.trim();
 
 		const user = await User.findOne({ email });
 
-		if (!user) {
-			return res.status(401).json({
-				success: false,
-				message: 'Invalid email or password',
-			});
-		}
-
-		if (password !== user.password) {
+		if (!user || password !== user.password) {
 			return res.status(401).json({
 				success: false,
 				message: 'Invalid email or password',
@@ -82,23 +75,17 @@ router.post('/login', async (req, res) => {
 			expiresIn: '1d',
 		});
 
-		res.cookie('token', token, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'none',
-			maxAge: 24 * 60 * 60 * 1000,
-		});
-
 		return res.status(200).json({
 			success: true,
 			message: 'Login successful',
+			token,
 			user: {
 				id: user._id,
 				email: user.email,
 			},
 		});
 	} catch (err) {
-		console.log(err);
+		console.log('LOGIN ERROR:', err.message);
 		return res.status(500).json({
 			success: false,
 			message: 'Server error',
